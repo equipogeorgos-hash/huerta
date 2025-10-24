@@ -45,6 +45,20 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 90%;
+      max-width: 800px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: #fff;
+    }
+    th {
+      background-color: #e0ffe0;
+    }
   </style>
 </head>
 <body>
@@ -55,17 +69,60 @@
 
   <img src="https://plastimol.com/wp-content/uploads/2024/03/HUERTA-DE-EUROPA-1024x765.webp" alt="Huerta de Europa">
 
-  <form>
+  <form id="mensajeForm">
     <h2>Publica tu mensaje</h2>
-    <input type="text" placeholder="Tu nombre" required>
-    <input type="email" placeholder="Tu correo electrónico" required>
-    <textarea rows="5" placeholder="¿Qué quieres vender o intercambiar?" required></textarea>
+    <input type="text" id="nombre" placeholder="Tu nombre" required>
+    <input type="email" id="correo" placeholder="Tu correo electrónico" required>
+    <textarea id="mensaje" rows="5" placeholder="¿Qué quieres vender o intercambiar?" required></textarea>
     <button type="submit">Publicar</button>
   </form>
 
   <section>
-    <h2>Mensajes recientes</h2>
-    <p>Aquí aparecerán los mensajes de otros usuarios (requiere programación adicional).</p>
+    <h2>Mensajes publicados</h2>
+    <table id="historial">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Mensaje</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </section>
+
+  <script>
+    const form = document.getElementById('mensajeForm');
+    const tabla = document.querySelector('#historial tbody');
+
+    function cargarMensajes() {
+      const mensajes = JSON.parse(localStorage.getItem('mensajesHuerta')) || [];
+      tabla.innerHTML = '';
+      mensajes.forEach(m => {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `<td>${m.fecha}</td><td>${m.nombre}</td><td>${m.correo}</td><td>${m.mensaje}</td>`;
+        tabla.appendChild(fila);
+      });
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const correo = document.getElementById('correo').value;
+      const mensaje = document.getElementById('mensaje').value;
+      const fecha = new Date().toLocaleString();
+
+      const nuevo = { fecha, nombre, correo, mensaje };
+      const mensajes = JSON.parse(localStorage.getItem('mensajesHuerta')) || [];
+      mensajes.push(nuevo);
+      localStorage.setItem('mensajesHuerta', JSON.stringify(mensajes));
+
+      form.reset();
+      cargarMensajes();
+    });
+
+    cargarMensajes();
+  </script>
 </body>
 </html>
